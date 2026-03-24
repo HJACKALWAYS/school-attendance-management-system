@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="content-grid">
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Take Attendance</h3>
+        </div>
+        <form method="get" class="inline-form">
+            <label>Choose Class
+                <select name="class_id" onchange="this.form.submit()">
+                    <option value="">Select class</option>
+                    {% for class_row in classes %}
+                    <option value="{{ class_row.id }}" {% if selected_class_id == class_row.id %}selected{% endif %}>
+                        {{ class_row.name }} - Section {{ class_row.section }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+        </form>
+
+        {% if selected_class_id %}
+        <form method="post" class="form-grid">
+            <input type="hidden" name="class_id" value="{{ selected_class_id }}">
+            <label>Attendance Date
+                <input type="date" name="attendance_date" value="{{ today }}" required>
+            </label>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in enrolled_students %}
+                    <tr>
+                        <td>{{ student.full_name }}<br><small>{{ student.student_number }} | {{ student.grade_level }}</small></td>
+                        <td>
+                            <select name="status_{{ student.id }}">
+                                <option value="Present">Present</option>
+                                <option value="Late">Late</option>
+                                <option value="Absent">Absent</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="remarks_{{ student.id }}" placeholder="Optional note">
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">No students enrolled in this class.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="primary-button">Save Attendance</button>
+        </form>
+        {% endif %}
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Attendance Summary</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Class</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in attendance_summary %}
+                <tr>
+                    <td>{{ item.attendance_date }}</td>
+                    <td>{{ item.class_name }}</td>
+                    <td>{{ item.status }}</td>
+                    <td>{{ item.total }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">No attendance summary yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+</section>
+{% endblock %}

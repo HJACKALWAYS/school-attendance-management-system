@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero-card">
+    <div>
+        <p class="eyebrow">Overview</p>
+        <h2>Track students, classes, and daily attendance in one place.</h2>
+    </div>
+    <a class="primary-button" href="{{ url_for('main.attendance') }}?class_id={{ classes[0]['id'] if classes else '' }}">Take attendance</a>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>Total Students</span>
+        <strong>{{ totals.students }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Total Classes</span>
+        <strong>{{ totals.classes }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Attendance Records</span>
+        <strong>{{ totals.records }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Today</span>
+        <strong>{{ today }}</strong>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-heading">
+        <h3>Recent Attendance</h3>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in recent_records %}
+            <tr>
+                <td>{{ record.attendance_date }}</td>
+                <td>{{ record.full_name }}</td>
+                <td>{{ record.class_name }}</td>
+                <td><span class="badge">{{ record.status }}</span></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No attendance records yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

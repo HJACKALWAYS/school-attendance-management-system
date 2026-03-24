@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="content-grid">
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Add Student</h3>
+        </div>
+        <form method="post" class="form-grid">
+            <label>Student Number
+                <input type="text" name="student_number" placeholder="2026-004" required>
+            </label>
+            <label>Full Name
+                <input type="text" name="full_name" placeholder="Student full name" required>
+            </label>
+            <label>Grade Level
+                <input type="text" name="grade_level" placeholder="Grade 9" required>
+            </label>
+            <button type="submit" class="primary-button">Save Student</button>
+        </form>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Student List</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Student No.</th>
+                    <th>Name</th>
+                    <th>Grade Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.student_number }}</td>
+                    <td>{{ student.full_name }}</td>
+                    <td>{{ student.grade_level }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3">No students yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+</section>
+{% endblock %}

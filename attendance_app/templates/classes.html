@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="content-grid">
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Add Class</h3>
+        </div>
+        <form method="post" class="form-grid">
+            <label>Class Name
+                <input type="text" name="name" placeholder="Grade 10 English" required>
+            </label>
+            <label>Section
+                <input type="text" name="section" placeholder="A" required>
+            </label>
+            <label>Schedule
+                <input type="text" name="schedule" placeholder="Mon-Fri 1:00 PM" required>
+            </label>
+            <button type="submit" class="primary-button">Save Class</button>
+        </form>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Enroll Student</h3>
+        </div>
+        <form method="post" action="{{ url_for('main.enroll') }}" class="form-grid">
+            <label>Student
+                <select name="student_id" required>
+                    <option value="">Select student</option>
+                    {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.full_name }} ({{ student.student_number }})</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Class
+                <select name="class_id" required>
+                    <option value="">Select class</option>
+                    {% for class_row in classes %}
+                    <option value="{{ class_row.id }}">{{ class_row.name }} - Section {{ class_row.section }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit" class="primary-button">Enroll</button>
+        </form>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-heading">
+        <h3>Class List</h3>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Class</th>
+                <th>Section</th>
+                <th>Schedule</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for class_row in classes %}
+            <tr>
+                <td>{{ class_row.name }}</td>
+                <td>{{ class_row.section }}</td>
+                <td>{{ class_row.schedule }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No classes yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
