@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | School Attendance Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-body">
+    <main class="login-shell">
+        <section class="login-panel">
+            <p class="eyebrow">Secure Access</p>
+            <h1>Teacher and Faculty Login</h1>
+            <p class="login-copy">Sign in to manage class attendance records.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <section class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </section>
+                {% endif %}
+            {% endwith %}
+
+            <form method="post" class="form-grid">
+                <label>Username
+                    <input type="text" name="username" placeholder="teacher" required>
+                </label>
+                <label>Password
+                    <input type="password" name="password" placeholder="Enter password" required>
+                </label>
+                <button type="submit" class="primary-button">Login</button>
+            </form>
+
+            <div class="credential-box">
+                <strong>Default Accounts</strong>
+                <p><b>Admin:</b> <code>admin</code> / <code>admin123</code></p>
+                <p><b>Teacher:</b> <code>teacher</code> / <code>teacher123</code></p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

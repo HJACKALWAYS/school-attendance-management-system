@@ -4,6 +4,7 @@ A simple school attendance management system built with Python, Flask, and SQLit
 
 ## Features
 
+- Login page for admin and teacher accounts
 - Add students
 - Add classes
 - Enroll students in classes
@@ -98,6 +99,11 @@ After the first deploy, every push to your `main` branch will automatically rede
 ## Database
 
 The app automatically creates `attendance.db` in the project folder on first run.
+
+## Default Login
+
+- Admin: `admin` / `admin123`
+- Teacher: `teacher` / `teacher123`
 
 Important: Render's filesystem is temporary, so SQLite data will not be reliable for long-term production use there. For a serious deployed version, move from SQLite to PostgreSQL.
 

@@ -1,13 +1,72 @@
 from datetime import date
+from functools import wraps
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from werkzeug.security import check_password_hash
 
 from .database import get_db
 
 main_bp = Blueprint("main", __name__)
 
 
+def login_required(view):
+    @wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Please log in first.", "error")
+            return redirect(url_for("main.login"))
+        return view(*args, **kwargs)
+
+    return wrapped_view
+
+
+def admin_required(view):
+    @wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if session.get("role") != "admin":
+            flash("Only admin users can access that page.", "error")
+            return redirect(url_for("main.dashboard"))
+        return view(*args, **kwargs)
+
+    return wrapped_view
+
+
+@main_bp.route("/login", methods=["GET", "POST"])
+def login():
+    if session.get("user_id"):
+        return redirect(url_for("main.dashboard"))
+
+    if request.method == "POST":
+        username = request.form["username"].strip()
+        password = request.form["password"]
+        db = get_db()
+        user = db.execute(
+            "SELECT * FROM users WHERE username = ?",
+            (username,),
+        ).fetchone()
+
+        if user and check_password_hash(user["password_hash"], password):
+            session.clear()
+            session["user_id"] = user["id"]
+            session["full_name"] = user["full_name"]
+            session["role"] = user["role"]
+            flash(f"Welcome, {user['full_name']}.", "success")
+            return redirect(url_for("main.dashboard"))
+
+        flash("Invalid username or password.", "error")
+
+    return render_template("login.html")
+
+
+@main_bp.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("main.login"))
+
+
 @main_bp.route("/")
+@login_required
 def dashboard():
     db = get_db()
     totals = {
@@ -36,6 +95,8 @@ def dashboard():
 
 
 @main_bp.route("/students", methods=["GET", "POST"])
+@login_required
+@admin_required
 def students():
     db = get_db()
     if request.method == "POST":
@@ -67,6 +128,8 @@ def students():
 
 
 @main_bp.route("/classes", methods=["GET", "POST"])
+@login_required
+@admin_required
 def classes():
     db = get_db()
     if request.method == "POST":
@@ -91,6 +154,8 @@ def classes():
 
 
 @main_bp.route("/enroll", methods=["POST"])
+@login_required
+@admin_required
 def enroll():
     db = get_db()
     student_id = request.form["student_id"]
@@ -109,6 +174,7 @@ def enroll():
 
 
 @main_bp.route("/attendance", methods=["GET", "POST"])
+@login_required
 def attendance():
     db = get_db()
     selected_class_id = request.args.get("class_id", type=int)

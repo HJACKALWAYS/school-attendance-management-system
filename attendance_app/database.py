@@ -2,6 +2,7 @@ import sqlite3
 from pathlib import Path
 
 from flask import Flask, current_app, g
+from werkzeug.security import generate_password_hash
 
 
 def get_db():
@@ -39,6 +40,29 @@ def init_db(app: Flask):
 
 
 def _seed_data(db):
+    user_count = db.execute("SELECT COUNT(*) AS total FROM users").fetchone()["total"]
+    if not user_count:
+        db.executemany(
+            """
+            INSERT INTO users (full_name, username, password_hash, role)
+            VALUES (?, ?, ?, ?)
+            """,
+            [
+                (
+                    "System Administrator",
+                    "admin",
+                    generate_password_hash("admin123"),
+                    "admin",
+                ),
+                (
+                    "Faculty Teacher",
+                    "teacher",
+                    generate_password_hash("teacher123"),
+                    "teacher",
+                ),
+            ],
+        )
+
     class_count = db.execute("SELECT COUNT(*) AS total FROM classes").fetchone()["total"]
     if class_count:
         return
@@ -72,6 +96,15 @@ def _seed_data(db):
 
 
 SCHEMA_SQL = """
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    full_name TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL CHECK(role IN ('admin', 'teacher')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_number TEXT NOT NULL UNIQUE,
