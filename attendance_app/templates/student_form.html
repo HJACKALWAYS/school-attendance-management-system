@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel narrow-panel">
+    <div class="panel-heading">
+        <h3>Edit Student</h3>
+    </div>
+    <form method="post" class="form-grid">
+        <label>Student Number
+            <input type="text" name="student_number" value="{{ student.student_number }}" required>
+        </label>
+        <label>Full Name
+            <input type="text" name="full_name" value="{{ student.full_name }}" required>
+        </label>
+        <label>Grade Level
+            <input type="text" name="grade_level" value="{{ student.grade_level }}" required>
+        </label>
+        <div class="form-actions">
+            <button type="submit" class="primary-button">Update Student</button>
+            <a class="secondary-link" href="{{ url_for('main.students') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

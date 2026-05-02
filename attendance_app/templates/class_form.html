@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel narrow-panel">
+    <div class="panel-heading">
+        <h3>Edit Class</h3>
+    </div>
+    <form method="post" class="form-grid">
+        <label>Class Name
+            <input type="text" name="name" value="{{ class_row.name }}" required>
+        </label>
+        <label>Section
+            <input type="text" name="section" value="{{ class_row.section }}" required>
+        </label>
+        <label>Schedule
+            <input type="text" name="schedule" value="{{ class_row.schedule }}" required>
+        </label>
+        <div class="form-actions">
+            <button type="submit" class="primary-button">Update Class</button>
+            <a class="secondary-link" href="{{ url_for('main.classes') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

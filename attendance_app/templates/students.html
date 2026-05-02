@@ -24,12 +24,22 @@
         <div class="panel-heading">
             <h3>Student List</h3>
         </div>
+        <form method="get" class="inline-form toolbar-form">
+            <label>Search Students
+                <input type="text" name="search" value="{{ search }}" placeholder="Name, student number, or grade">
+            </label>
+            <button type="submit" class="secondary-button">Search</button>
+            {% if search %}
+                <a class="secondary-link" href="{{ url_for('main.students') }}">Clear</a>
+            {% endif %}
+        </form>
         <table>
             <thead>
                 <tr>
                     <th>Student No.</th>
                     <th>Name</th>
                     <th>Grade Level</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,10 +48,16 @@
                     <td>{{ student.student_number }}</td>
                     <td>{{ student.full_name }}</td>
                     <td>{{ student.grade_level }}</td>
+                    <td class="actions-cell">
+                        <a class="secondary-link" href="{{ url_for('main.edit_student', student_id=student.id) }}">Edit</a>
+                        <form method="post" action="{{ url_for('main.delete_student', student_id=student.id) }}" onsubmit="return confirm('Delete this student and related attendance records?');">
+                            <button type="submit" class="danger-button">Delete</button>
+                        </form>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="3">No students yet.</td>
+                    <td colspan="4">No students found.</td>
                 </tr>
                 {% endfor %}
             </tbody>

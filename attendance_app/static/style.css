@@ -140,6 +140,19 @@ a {
     gap: 1rem;
 }
 
+.toolbar-form {
+    grid-template-columns: minmax(220px, 1fr) auto auto;
+    align-items: end;
+    margin-bottom: 1rem;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
 label {
     display: grid;
     gap: 0.45rem;
@@ -174,6 +187,49 @@ button {
 .primary-button:hover,
 button:hover {
     background: var(--accent-dark);
+}
+
+.secondary-button,
+.secondary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    background: #ffffff;
+    color: var(--ink);
+}
+
+.secondary-button:hover,
+.secondary-link:hover {
+    background: #f3f4f6;
+}
+
+.danger-button {
+    background: #dc2626;
+}
+
+.danger-button:hover {
+    background: #b91c1c;
+}
+
+.actions-cell,
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.actions-cell form {
+    margin: 0;
+}
+
+.narrow-panel {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 table {
@@ -257,5 +313,9 @@ small {
         padding: 1.25rem;
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .toolbar-form {
+        grid-template-columns: 1fr;
     }
 }

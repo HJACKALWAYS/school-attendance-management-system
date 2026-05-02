@@ -99,6 +99,7 @@ def dashboard():
 @admin_required
 def students():
     db = get_db()
+    search = request.args.get("search", "").strip()
     if request.method == "POST":
         student_number = request.form["student_number"].strip()
         full_name = request.form["full_name"].strip()
@@ -121,10 +122,69 @@ def students():
             except Exception:
                 flash("Student number must be unique.", "error")
 
-    student_rows = db.execute(
-        "SELECT * FROM students ORDER BY full_name"
-    ).fetchall()
-    return render_template("students.html", students=student_rows)
+    if search:
+        student_rows = db.execute(
+            """
+            SELECT * FROM students
+            WHERE student_number LIKE ? OR full_name LIKE ? OR grade_level LIKE ?
+            ORDER BY full_name
+            """,
+            (f"%{search}%", f"%{search}%", f"%{search}%"),
+        ).fetchall()
+    else:
+        student_rows = db.execute(
+            "SELECT * FROM students ORDER BY full_name"
+        ).fetchall()
+    return render_template("students.html", students=student_rows, search=search)
+
+
+@main_bp.route("/students/<int:student_id>/edit", methods=["GET", "POST"])
+@login_required
+@admin_required
+def edit_student(student_id):
+    db = get_db()
+    student = db.execute("SELECT * FROM students WHERE id = ?", (student_id,)).fetchone()
+    if not student:
+        flash("Student not found.", "error")
+        return redirect(url_for("main.students"))
+
+    if request.method == "POST":
+        student_number = request.form["student_number"].strip()
+        full_name = request.form["full_name"].strip()
+        grade_level = request.form["grade_level"].strip()
+
+        if not student_number or not full_name or not grade_level:
+            flash("All student fields are required.", "error")
+        else:
+            try:
+                db.execute(
+                    """
+                    UPDATE students
+                    SET student_number = ?, full_name = ?, grade_level = ?
+                    WHERE id = ?
+                    """,
+                    (student_number, full_name, grade_level, student_id),
+                )
+                db.commit()
+                flash("Student updated successfully.", "success")
+                return redirect(url_for("main.students"))
+            except Exception:
+                flash("Student number must be unique.", "error")
+
+    return render_template("student_form.html", student=student)
+
+
+@main_bp.route("/students/<int:student_id>/delete", methods=["POST"])
+@login_required
+@admin_required
+def delete_student(student_id):
+    db = get_db()
+    db.execute("DELETE FROM attendance_records WHERE student_id = ?", (student_id,))
+    db.execute("DELETE FROM enrollments WHERE student_id = ?", (student_id,))
+    db.execute("DELETE FROM students WHERE id = ?", (student_id,))
+    db.commit()
+    flash("Student deleted successfully.", "success")
+    return redirect(url_for("main.students"))
 
 
 @main_bp.route("/classes", methods=["GET", "POST"])
@@ -151,6 +211,52 @@ def classes():
     class_rows = db.execute("SELECT * FROM classes ORDER BY name").fetchall()
     students = db.execute("SELECT * FROM students ORDER BY full_name").fetchall()
     return render_template("classes.html", classes=class_rows, students=students)
+
+
+@main_bp.route("/classes/<int:class_id>/edit", methods=["GET", "POST"])
+@login_required
+@admin_required
+def edit_class(class_id):
+    db = get_db()
+    class_row = db.execute("SELECT * FROM classes WHERE id = ?", (class_id,)).fetchone()
+    if not class_row:
+        flash("Class not found.", "error")
+        return redirect(url_for("main.classes"))
+
+    if request.method == "POST":
+        name = request.form["name"].strip()
+        section = request.form["section"].strip()
+        schedule = request.form["schedule"].strip()
+
+        if not name or not section or not schedule:
+            flash("All class fields are required.", "error")
+        else:
+            db.execute(
+                """
+                UPDATE classes
+                SET name = ?, section = ?, schedule = ?
+                WHERE id = ?
+                """,
+                (name, section, schedule, class_id),
+            )
+            db.commit()
+            flash("Class updated successfully.", "success")
+            return redirect(url_for("main.classes"))
+
+    return render_template("class_form.html", class_row=class_row)
+
+
+@main_bp.route("/classes/<int:class_id>/delete", methods=["POST"])
+@login_required
+@admin_required
+def delete_class(class_id):
+    db = get_db()
+    db.execute("DELETE FROM attendance_records WHERE class_id = ?", (class_id,))
+    db.execute("DELETE FROM enrollments WHERE class_id = ?", (class_id,))
+    db.execute("DELETE FROM classes WHERE id = ?", (class_id,))
+    db.commit()
+    flash("Class deleted successfully.", "success")
+    return redirect(url_for("main.classes"))
 
 
 @main_bp.route("/enroll", methods=["POST"])
@@ -241,4 +347,60 @@ def attendance():
         selected_class_id=selected_class_id,
         today=date.today().isoformat(),
         attendance_summary=attendance_summary,
+    )
+
+
+@main_bp.route("/reports")
+@login_required
+def reports():
+    db = get_db()
+    class_id = request.args.get("class_id", type=int)
+    status = request.args.get("status", "").strip()
+    start_date = request.args.get("start_date", "").strip()
+    end_date = request.args.get("end_date", "").strip()
+
+    filters = []
+    values = []
+    if class_id:
+        filters.append("ar.class_id = ?")
+        values.append(class_id)
+    if status:
+        filters.append("ar.status = ?")
+        values.append(status)
+    if start_date:
+        filters.append("ar.attendance_date >= ?")
+        values.append(start_date)
+    if end_date:
+        filters.append("ar.attendance_date <= ?")
+        values.append(end_date)
+
+    where_clause = f"WHERE {' AND '.join(filters)}" if filters else ""
+    records = db.execute(
+        f"""
+        SELECT ar.attendance_date, ar.status, ar.remarks,
+               s.student_number, s.full_name, s.grade_level,
+               c.name AS class_name, c.section
+        FROM attendance_records ar
+        JOIN students s ON s.id = ar.student_id
+        JOIN classes c ON c.id = ar.class_id
+        {where_clause}
+        ORDER BY ar.attendance_date DESC, c.name, s.full_name
+        """,
+        values,
+    ).fetchall()
+
+    classes = db.execute("SELECT * FROM classes ORDER BY name").fetchall()
+    totals = {"Present": 0, "Late": 0, "Absent": 0}
+    for record in records:
+        totals[record["status"]] += 1
+
+    return render_template(
+        "reports.html",
+        records=records,
+        classes=classes,
+        totals=totals,
+        selected_class_id=class_id,
+        selected_status=status,
+        start_date=start_date,
+        end_date=end_date,
     )

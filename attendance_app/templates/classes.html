@@ -56,6 +56,7 @@
                 <th>Class</th>
                 <th>Section</th>
                 <th>Schedule</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -64,10 +65,16 @@
                 <td>{{ class_row.name }}</td>
                 <td>{{ class_row.section }}</td>
                 <td>{{ class_row.schedule }}</td>
+                <td class="actions-cell">
+                    <a class="secondary-link" href="{{ url_for('main.edit_class', class_id=class_row.id) }}">Edit</a>
+                    <form method="post" action="{{ url_for('main.delete_class', class_id=class_row.id) }}" onsubmit="return confirm('Delete this class and related attendance records?');">
+                        <button type="submit" class="danger-button">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="3">No classes yet.</td>
+                <td colspan="4">No classes yet.</td>
             </tr>
             {% endfor %}
         </tbody>

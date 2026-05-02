@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-heading">
+        <h3>Attendance Reports</h3>
+    </div>
+    <form method="get" class="filter-grid">
+        <label>Class
+            <select name="class_id">
+                <option value="">All classes</option>
+                {% for class_row in classes %}
+                <option value="{{ class_row.id }}" {% if selected_class_id == class_row.id %}selected{% endif %}>
+                    {{ class_row.name }} - Section {{ class_row.section }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Status
+            <select name="status">
+                <option value="">All statuses</option>
+                <option value="Present" {% if selected_status == "Present" %}selected{% endif %}>Present</option>
+                <option value="Late" {% if selected_status == "Late" %}selected{% endif %}>Late</option>
+                <option value="Absent" {% if selected_status == "Absent" %}selected{% endif %}>Absent</option>
+            </select>
+        </label>
+        <label>Start Date
+            <input type="date" name="start_date" value="{{ start_date }}">
+        </label>
+        <label>End Date
+            <input type="date" name="end_date" value="{{ end_date }}">
+        </label>
+        <button type="submit" class="primary-button">Apply Filters</button>
+        <a class="secondary-link" href="{{ url_for('main.reports') }}">Clear</a>
+    </form>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>Present</span>
+        <strong>{{ totals.Present }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Late</span>
+        <strong>{{ totals.Late }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Absent</span>
+        <strong>{{ totals.Absent }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Total Records</span>
+        <strong>{{ records|length }}</strong>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-heading">
+        <h3>Report Results</h3>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Status</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.attendance_date }}</td>
+                <td>{{ record.full_name }}<br><small>{{ record.student_number }} | {{ record.grade_level }}</small></td>
+                <td>{{ record.class_name }}<br><small>Section {{ record.section }}</small></td>
+                <td><span class="badge">{{ record.status }}</span></td>
+                <td>{{ record.remarks or "" }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No attendance records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

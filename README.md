@@ -6,11 +6,14 @@ A simple school attendance management system built with Python, Flask, and SQLit
 
 - Login page for admin and teacher accounts
 - Add students
+- Search, edit, and delete students
 - Add classes
+- Edit and delete classes
 - Enroll students in classes
 - Record daily attendance
+- Filter attendance reports by class, status, and date range
 - Save data in a SQLite database file
-- View recent attendance and summary data
+- View recent attendance and dashboard summary data
 
 ## Project Structure
 
@@ -28,8 +31,11 @@ school attendance management system/
 |       |-- base.html
 |       |-- dashboard.html
 |       |-- students.html
+|       |-- student_form.html
 |       |-- classes.html
-|       `-- attendance.html
+|       |-- class_form.html
+|       |-- attendance.html
+|       `-- reports.html
 `-- .vscode/
     `-- launch.json
 ```
@@ -109,8 +115,8 @@ Important: Render's filesystem is temporary, so SQLite data will not be reliable
 
 ## Next Improvements
 
-- Add login for admin and teachers
 - Export attendance reports to Excel or PDF
-- Add edit and delete actions
-- Add search and filters
+- Add teacher/faculty account management
+- Add password change page
+- Move production database from SQLite to PostgreSQL
 - Deploy online with Render or Railway
