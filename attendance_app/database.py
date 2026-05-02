@@ -67,28 +67,54 @@ def _seed_data(db):
     if class_count:
         return
 
+    sample_classes = [
+        ("Grade 7 Mathematics", "A", "Mon/Wed/Fri 8:00 AM"),
+        ("Grade 7 English", "A", "Tue/Thu 10:00 AM"),
+        ("Grade 8 Science", "B", "Tue/Thu 9:30 AM"),
+        ("Grade 8 Filipino", "B", "Mon/Wed 1:00 PM"),
+        ("Grade 9 History", "C", "Mon/Wed/Fri 11:00 AM"),
+        ("Grade 10 ICT", "A", "Tue/Thu 2:00 PM"),
+    ]
     db.executemany(
         "INSERT INTO classes (name, section, schedule) VALUES (?, ?, ?)",
-        [
-            ("Grade 7 Mathematics", "A", "Mon/Wed/Fri 8:00 AM"),
-            ("Grade 8 Science", "B", "Tue/Thu 9:30 AM"),
-        ],
+        sample_classes,
     )
 
+    sample_students = [
+        ("2026-001", "Maria Santos", "Grade 7"),
+        ("2026-002", "John Cruz", "Grade 7"),
+        ("2026-003", "Anne Reyes", "Grade 8"),
+        ("2026-004", "Paolo Garcia", "Grade 7"),
+        ("2026-005", "Sofia Mendoza", "Grade 7"),
+        ("2026-006", "Miguel Torres", "Grade 8"),
+        ("2026-007", "Jasmine Flores", "Grade 8"),
+        ("2026-008", "Carlo Dela Cruz", "Grade 8"),
+        ("2026-009", "Bianca Ramos", "Grade 9"),
+        ("2026-010", "Nathan Villanueva", "Grade 9"),
+        ("2026-011", "Erika Bautista", "Grade 9"),
+        ("2026-012", "Lance Navarro", "Grade 10"),
+        ("2026-013", "Andrea Lim", "Grade 10"),
+        ("2026-014", "Joshua Aquino", "Grade 10"),
+        ("2026-015", "Trisha Gutierrez", "Grade 10"),
+    ]
     db.executemany(
         "INSERT INTO students (student_number, full_name, grade_level) VALUES (?, ?, ?)",
-        [
-            ("2026-001", "Maria Santos", "Grade 7"),
-            ("2026-002", "John Cruz", "Grade 7"),
-            ("2026-003", "Anne Reyes", "Grade 8"),
-        ],
+        sample_students,
     )
 
-    enrollments = [
-        (1, 1),
-        (2, 1),
-        (3, 2),
-    ]
+    class_rows = db.execute("SELECT id, name FROM classes").fetchall()
+    student_rows = db.execute("SELECT id, grade_level FROM students").fetchall()
+    class_ids_by_grade = {
+        "Grade 7": [row["id"] for row in class_rows if row["name"].startswith("Grade 7")],
+        "Grade 8": [row["id"] for row in class_rows if row["name"].startswith("Grade 8")],
+        "Grade 9": [row["id"] for row in class_rows if row["name"].startswith("Grade 9")],
+        "Grade 10": [row["id"] for row in class_rows if row["name"].startswith("Grade 10")],
+    }
+    enrollments = []
+    for student in student_rows:
+        for class_id in class_ids_by_grade.get(student["grade_level"], []):
+            enrollments.append((student["id"], class_id))
+
     db.executemany(
         "INSERT INTO enrollments (student_id, class_id) VALUES (?, ?)",
         enrollments,
