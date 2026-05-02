@@ -1,15 +1,14 @@
 :root {
-    --bg: #f4efe6;
-    --panel: #fffdf8;
-    --ink: #1e2430;
-    --muted: #6c7688;
-    --accent: #1e6f5c;
-    --accent-dark: #184f42;
-    --line: #ddd4c7;
-    --highlight: #f6b73c;
-    --danger: #9f2f2f;
-    --success: #1c7c54;
-    --shadow: 0 20px 40px rgba(30, 36, 48, 0.08);
+    --bg: #f7f8fa;
+    --panel: #ffffff;
+    --ink: #1f2937;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --line: #e5e7eb;
+    --danger: #b91c1c;
+    --success: #047857;
+    --shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 * {
@@ -18,10 +17,8 @@
 
 body {
     margin: 0;
-    font-family: Georgia, "Times New Roman", serif;
-    background:
-        radial-gradient(circle at top left, rgba(246, 183, 60, 0.3), transparent 25%),
-        linear-gradient(135deg, #f4efe6, #e8f0ea);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
     color: var(--ink);
 }
 
@@ -35,7 +32,15 @@ a {
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    padding: 2rem 4rem;
+    padding: 1rem 2rem;
+    background: #ffffff;
+    border-bottom: 1px solid var(--line);
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
 }
 
 .site-header nav {
@@ -45,15 +50,21 @@ a {
 }
 
 .site-header nav a {
-    padding: 0.7rem 1rem;
-    border: 1px solid rgba(30, 111, 92, 0.16);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.6);
+    padding: 0.55rem 0.75rem;
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.site-header nav a:hover {
+    background: #f3f4f6;
+    color: var(--ink);
 }
 
 .nav-user {
-    padding: 0.7rem 1rem;
+    padding: 0.55rem 0;
     color: var(--muted);
+    font-size: 0.95rem;
 }
 
 .page-shell {
@@ -65,17 +76,18 @@ a {
 .eyebrow {
     margin: 0 0 0.5rem;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     color: var(--muted);
-    font-size: 0.78rem;
+    font-size: 0.75rem;
+    font-weight: 700;
 }
 
 .hero-card,
 .panel,
 .stat-card {
     background: var(--panel);
-    border: 1px solid rgba(221, 212, 199, 0.9);
-    border-radius: 22px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
     box-shadow: var(--shadow);
 }
 
@@ -97,7 +109,7 @@ a {
 }
 
 .stat-card {
-    padding: 1.5rem;
+    padding: 1.25rem;
 }
 
 .stat-card span {
@@ -111,7 +123,7 @@ a {
 }
 
 .panel {
-    padding: 1.5rem;
+    padding: 1.25rem;
     margin-bottom: 1.5rem;
 }
 
@@ -144,16 +156,16 @@ input,
 select {
     width: 100%;
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
+    border-radius: 6px;
+    padding: 0.75rem 0.85rem;
     background: #fff;
 }
 
 .primary-button,
 button {
     border: none;
-    border-radius: 14px;
-    padding: 0.9rem 1.2rem;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
     background: var(--accent);
     color: #fff;
     cursor: pointer;
@@ -179,10 +191,11 @@ td {
 
 .badge {
     display: inline-block;
-    padding: 0.35rem 0.7rem;
-    border-radius: 999px;
-    background: rgba(30, 111, 92, 0.12);
-    color: var(--accent-dark);
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 0.9rem;
 }
 
 .flash-stack {
@@ -192,17 +205,20 @@ td {
 }
 
 .flash {
-    padding: 0.9rem 1rem;
-    border-radius: 14px;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
 }
 
 .flash.success {
-    background: rgba(28, 124, 84, 0.12);
+    background: #ecfdf5;
+    border-color: #a7f3d0;
     color: var(--success);
 }
 
 .flash.error {
-    background: rgba(159, 47, 47, 0.12);
+    background: #fef2f2;
+    border-color: #fecaca;
     color: var(--danger);
 }
 
@@ -219,8 +235,8 @@ td {
 
 .login-panel {
     background: var(--panel);
-    border: 1px solid rgba(221, 212, 199, 0.9);
-    border-radius: 28px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
     box-shadow: var(--shadow);
     padding: 2rem;
 }
@@ -229,17 +245,6 @@ td {
     color: var(--muted);
     margin-top: 0;
     margin-bottom: 1.5rem;
-}
-
-.credential-box {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    border-radius: 18px;
-    background: rgba(30, 111, 92, 0.08);
-}
-
-.credential-box p {
-    margin: 0.5rem 0 0;
 }
 
 small {
