@@ -68,12 +68,12 @@ def _seed_data(db):
         return
 
     sample_classes = [
-        ("Grade 7 Mathematics", "A", "Mon/Wed/Fri 8:00 AM"),
-        ("Grade 7 English", "A", "Tue/Thu 10:00 AM"),
-        ("Grade 8 Science", "B", "Tue/Thu 9:30 AM"),
-        ("Grade 8 Filipino", "B", "Mon/Wed 1:00 PM"),
-        ("Grade 9 History", "C", "Mon/Wed/Fri 11:00 AM"),
-        ("Grade 10 ICT", "A", "Tue/Thu 2:00 PM"),
+        ("Grade 7 Mathematics", "A", "M/W/F 8:00-9:00 AM"),
+        ("Grade 7 English", "A", "T/TH 10:30-11:30 AM"),
+        ("Grade 8 Science", "B", "T/TH 9:30-10:30 AM"),
+        ("Grade 8 Filipino", "B", "M/W 1:00-2:00 PM"),
+        ("Grade 9 History", "C", "M/W/F 11:00 AM-12:00 PM"),
+        ("Grade 10 ICT", "A", "T/TH 2:00-3:00 PM"),
     ]
     db.executemany(
         "INSERT INTO classes (name, section, schedule) VALUES (?, ?, ?)",
